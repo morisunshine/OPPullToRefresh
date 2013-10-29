@@ -21,6 +21,7 @@
 		08DDE529181FF95F0021BB63 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08DDE50B181FF95F0021BB63 /* UIKit.framework */; };
 		08DDE531181FF95F0021BB63 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 08DDE52F181FF95F0021BB63 /* InfoPlist.strings */; };
 		08DDE533181FF95F0021BB63 /* OPPullToRefreshDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 08DDE532181FF95F0021BB63 /* OPPullToRefreshDemoTests.m */; };
+		08DDE53F181FF9AE0021BB63 /* UIScrollView+OPPullToRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = 08DDE53E181FF9AE0021BB63 /* UIScrollView+OPPullToRefresh.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,8 @@
 		08DDE52E181FF95F0021BB63 /* OPPullToRefreshDemoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "OPPullToRefreshDemoTests-Info.plist"; sourceTree = "<group>"; };
 		08DDE530181FF95F0021BB63 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		08DDE532181FF95F0021BB63 /* OPPullToRefreshDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OPPullToRefreshDemoTests.m; sourceTree = "<group>"; };
+		08DDE53D181FF9AE0021BB63 /* UIScrollView+OPPullToRefresh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+OPPullToRefresh.h"; sourceTree = "<group>"; };
+		08DDE53E181FF9AE0021BB63 /* UIScrollView+OPPullToRefresh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+OPPullToRefresh.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +85,7 @@
 		08DDE4FB181FF95F0021BB63 = {
 			isa = PBXGroup;
 			children = (
+				08DDE53C181FF97F0021BB63 /* OPPullToRefresh */,
 				08DDE50D181FF95F0021BB63 /* OPPullToRefreshDemo */,
 				08DDE52C181FF95F0021BB63 /* OPPullToRefreshDemoTests */,
 				08DDE506181FF95F0021BB63 /* Frameworks */,
@@ -150,6 +154,15 @@
 				08DDE52F181FF95F0021BB63 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		08DDE53C181FF97F0021BB63 /* OPPullToRefresh */ = {
+			isa = PBXGroup;
+			children = (
+				08DDE53D181FF9AE0021BB63 /* UIScrollView+OPPullToRefresh.h */,
+				08DDE53E181FF9AE0021BB63 /* UIScrollView+OPPullToRefresh.m */,
+			);
+			name = OPPullToRefresh;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -251,6 +264,7 @@
 			files = (
 				08DDE51E181FF95F0021BB63 /* ViewController.m in Sources */,
 				08DDE518181FF95F0021BB63 /* AppDelegate.m in Sources */,
+				08DDE53F181FF9AE0021BB63 /* UIScrollView+OPPullToRefresh.m in Sources */,
 				08DDE514181FF95F0021BB63 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
