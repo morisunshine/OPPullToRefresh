@@ -19,10 +19,18 @@
 
 @end
 
+typedef NS_ENUM(NSUInteger, OPPullToRefreshState)
+{
+    OPPullToRefreshStateStopped = 0,
+    OPPullToRefreshStateTriggered,
+    OPPullToRefreshStateLoading,
+    OPPullToRefreshStateAll = 10
+};
+
 @interface OPPullToRefreshView : UIView
 
 @property (nonatomic, strong, readonly) UILabel *titleLabel;
 @property (nonatomic, strong, readonly) UILabel *subtitleLabel;
-@property (nonatomic, weak) UIScrollView *scrollView;
+@property (nonatomic, readonly) OPPullToRefreshState state;
 
 @end

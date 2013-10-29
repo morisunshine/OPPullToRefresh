@@ -16,6 +16,12 @@ static CGFloat const OPPullToRefreshViewHeight = 60;
 
 @property (nonatomic, strong, readwrite) UILabel *titleLabel;
 @property (nonatomic, strong, readwrite) UILabel *subtitleLabel;
+@property (nonatomic, readwrite) OPPullToRefreshState state;
+@property (nonatomic, strong) NSMutableArray *titles;
+@property (nonatomic, strong) NSMutableArray *subtitles;
+@property (nonatomic, weak) UIScrollView *scrollView;
+@property (nonatomic, readwrite) CGFloat originalTopInset;
+
 @property (nonatomic, assign) BOOL isObserving;
 
 @end
@@ -38,6 +44,8 @@ static char UIScrollViewPullToRefreshView;
         view.pullToRefreshActionHandler = actionHandler;
         view.scrollView = self;
         [self addSubview:view];
+        
+        view.originalTopInset = self.contentInset.top;
         
         self.pullToRefreshView = view;
         self.showsPullToResfresh = YES;
@@ -90,6 +98,74 @@ static char UIScrollViewPullToRefreshView;
 - (BOOL)showsPullToResfresh
 {
     return !self.pullToRefreshView;
+}
+
+@end
+
+#pragma mark - OPPullToRefresh
+
+@implementation OPPullToRefreshView
+
+- (id)initWithFrame:(CGRect)frame
+{
+    if (self = [super initWithFrame:frame]) {
+        self.titles = [NSMutableArray arrayWithObjects:NSLocalizedString(@"Pull to refresh",), NSLocalizedString(@"Release to Refresh...", ), NSLocalizedString(@"Loading...",), nil];
+        self.subtitles = [NSMutableArray arrayWithObjects:@"",@"",@"",@"", nil];
+    }
+    
+    return self;
+}
+
+- (void)willMoveToSuperview:(UIView *)newSuperview
+{
+    if (self.superview && newSuperview == nil) {
+        UIScrollView *scrollView = (UIScrollView *)self.superview;
+        if (scrollView.showsPullToResfresh) {
+            if (self.isObserving) {
+                [scrollView removeObserver:self forKeyPath:@"contentOffset"];
+                [scrollView removeObserver:self forKeyPath:@"contentSize"];
+                [scrollView removeObserver:self forKeyPath:@"frame"];
+                self.isObserving = NO;
+            }
+        }
+    }
+}
+
+#pragma mark - Observing -
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"contentOffset"]) {
+        [self scrollViewDidScroll:[[change valueForKey:NSKeyValueChangeNewKey] CGPointValue]];
+    }
+}
+
+- (void)scrollViewDidScroll:(CGPoint)contentOffset
+{
+    if (self.state != OPPullToRefreshStateLoading) {
+        CGFloat scrollOffsetThreshold = 0;
+        scrollOffsetThreshold = self.frame.origin.y - self.originalTopInset;
+        
+        if (!self.scrollView.isDragging && self.state == OPPullToRefreshStateTriggered) {
+            self.state = OPPullToRefreshStateLoading;
+        } else if (contentOffset.y < scrollOffsetThreshold && self.scrollView.isDragging && self.state == OPPullToRefreshStateStopped) {
+            self.state = OPPullToRefreshStateTriggered;
+        } else if (contentOffset.y >= scrollOffsetThreshold && self.state != OPPullToRefreshStateStopped) {
+            self.state = OPPullToRefreshStateStopped;
+        }
+    } else {
+        CGFloat offset;
+        UIEdgeInsets contentInset;
+        offset = MAX(self.scrollView.contentOffset.y * -1, 0.0);
+        offset = MIN(offset, self.originalTopInset + self.bounds.size.height);
+        contentInset = self.scrollView.contentInset;
+        self.scrollView.contentInset = UIEdgeInsetsMake(offset, contentInset.left, contentInset.bottom, contentInset.right);
+    }
+}
+
+- (void)setState:(OPPullToRefreshState)newState
+{
+    
 }
 
 @end
