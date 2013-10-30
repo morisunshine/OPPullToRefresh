@@ -20,6 +20,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     [self.view addSubview:self.tableView];
     __weak ViewController *weakSelf = self;
     [self.tableView addOPPullToRefreshWithActionHandler:^{

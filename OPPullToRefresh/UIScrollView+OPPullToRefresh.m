@@ -110,12 +110,14 @@ static char UIScrollViewPullToRefreshView;
 @synthesize state = _state;
 @synthesize scrollView = _scrollView;
 @synthesize titleLabel = _titleLabel;
+@synthesize textColor = _textColor;
 
 - (id)initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
         self.titles = [NSMutableArray arrayWithObjects:NSLocalizedString(@"Pull to refresh",), NSLocalizedString(@"Release to Refresh...", ), NSLocalizedString(@"Loading...",), nil];
         self.subtitles = [NSMutableArray arrayWithObjects:@"",@"",@"",@"", nil];
+        self.textColor = [UIColor colorWithRed:0/255.0 green:203/255.0 blue:124/255.0 alpha:1];
     }
     
     return self;
@@ -151,6 +153,8 @@ static char UIScrollViewPullToRefreshView;
             [self rotateCircel];
             break;
     }
+    
+    self.titleLabel.text = self.titles[self.state];
 }
 
 #pragma mark - Observing -
@@ -290,6 +294,22 @@ static char UIScrollViewPullToRefreshView;
     }
     
     return _circle;
+}
+
+- (UILabel *)titleLabel
+{
+    if (!_titleLabel) {
+        CGFloat xOrigin = self.circle.frame.origin.x + self.circle.frame.size.width + 10;
+        CGFloat yOrigin = self.circle.frame.origin.y;
+        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(xOrigin, yOrigin, 210, 20)];
+        _titleLabel.text = NSLocalizedString(@"pull to refresh", );
+        _titleLabel.font = [UIFont systemFontOfSize:14];
+        _titleLabel.backgroundColor = [UIColor clearColor];
+        _titleLabel.textColor = self.textColor;
+        [self addSubview:_titleLabel];
+    }
+    
+    return _titleLabel;
 }
 
 @end

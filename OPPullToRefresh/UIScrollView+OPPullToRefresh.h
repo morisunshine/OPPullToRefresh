@@ -29,10 +29,12 @@ typedef NS_ENUM(NSUInteger, OPPullToRefreshState)
 
 @interface OPPullToRefreshView : UIView
 
+@property (nonatomic, strong) UIColor *textColor;
 @property (nonatomic, strong, readonly) UILabel *titleLabel;
 @property (nonatomic, strong, readonly) UILabel *subtitleLabel;
 @property (nonatomic, readonly) OPPullToRefreshState state;
 
+//- (void)setTitle:(NSString *)title forState:(OPPullToRefreshState)state;
 - (void)stopAnimating;
 
 @end
