@@ -22,7 +22,7 @@
     [super viewDidLoad];
     [self.view addSubview:self.tableView];
     __weak ViewController *weakSelf = self;
-    [self.tableView addPullToRefreshWithActionHandler:^{
+    [self.tableView addOPPullToRefreshWithActionHandler:^{
         [weakSelf insertRowAtTop];
     }];
 	// Do any additional setup after loading the view, typically from a nib.
@@ -51,7 +51,7 @@
 {
     if (!_tableView) {
         _tableView = [[UITableView alloc] initWithFrame:self.view.bounds];
-        _tableView.backgroundColor = [UIColor colorWithRed:203/255 green:247/255 blue:200/255 alpha:1];
+        _tableView.backgroundColor = [UIColor whiteColor];
         _tableView.delegate = self;
         _tableView.dataSource = self;
     }
