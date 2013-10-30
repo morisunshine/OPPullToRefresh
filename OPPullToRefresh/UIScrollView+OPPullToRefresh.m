@@ -283,7 +283,7 @@ static char UIScrollViewPullToRefreshView;
 {
     if (!_circle) {
         _circle = [[UIImageView alloc] initWithFrame:CGRectMake(100, self.bounds.size.height - 27, 31, 27)];
-        _circle.image = [UIImage imageNamed:@"load_Complete.png"];
+        _circle.image = [UIImage imageNamed:@"loading.png"];
         _circle.backgroundColor = [UIColor clearColor];
         [self addSubview:_circle];
     }
