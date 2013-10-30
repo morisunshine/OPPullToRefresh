@@ -277,8 +277,10 @@ static char UIScrollViewPullToRefreshView;
 
 - (void)stopAnimating
 {
-    self.state = OPPullToRefreshStateStopped;
-    [self.scrollView setContentOffset:CGPointMake(0, 0) animated:YES];
+    if (self.state == OPPullToRefreshStateLoading) {
+        self.state = OPPullToRefreshStateStopped;
+        [self.scrollView setContentOffset:CGPointMake(0, 0) animated:YES];
+    }
 }
 
 #pragma mark - Getters -
