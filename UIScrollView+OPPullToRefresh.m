@@ -8,12 +8,13 @@
 
 #import "UIScrollView+OPPullToRefresh.h"
 
-static CGFloat const OPPullToRefreshViewHeight = 60;
+static CGFloat const OPPullToRefreshViewHeight = 30;
 
 @interface OPPullToRefreshView ()
 
 @property (nonatomic, copy) void (^pullToRefreshActionHandler)(void);
 
+@property (nonatomic, strong) UIImageView *circle;
 @property (nonatomic, strong, readwrite) UILabel *titleLabel;
 @property (nonatomic, strong, readwrite) UILabel *subtitleLabel;
 @property (nonatomic, readwrite) OPPullToRefreshState state;
@@ -21,7 +22,6 @@ static CGFloat const OPPullToRefreshViewHeight = 60;
 @property (nonatomic, strong) NSMutableArray *subtitles;
 @property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, readwrite) CGFloat originalTopInset;
-
 @property (nonatomic, assign) BOOL isObserving;
 
 @end
@@ -106,6 +106,11 @@ static char UIScrollViewPullToRefreshView;
 
 @implementation OPPullToRefreshView
 
+@synthesize pullToRefreshActionHandler;
+@synthesize state = _state;
+@synthesize scrollView = _scrollView;
+@synthesize titleLabel = _titleLabel;
+
 - (id)initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
@@ -131,6 +136,23 @@ static char UIScrollViewPullToRefreshView;
     }
 }
 
+- (void)layoutSubviews
+{
+    switch (self.state) {
+        case OPPullToRefreshStateAll:
+        case OPPullToRefreshStateStopped:
+            self.circle.alpha = 1;
+            [self rotateCircle:0 hide:NO];
+            break;
+        case OPPullToRefreshStateTriggered:
+            [self rotateCircle:(float)M_PI hide:NO];
+            break;
+        case OPPullToRefreshStateLoading:
+            [self rotateCircel];
+            break;
+    }
+}
+
 #pragma mark - Observing -
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -140,17 +162,52 @@ static char UIScrollViewPullToRefreshView;
     }
 }
 
+#pragma mark - Private Methods -
+
+- (void)resetScrollViewContentInset
+{
+    UIEdgeInsets currentInsets = self.scrollView.contentInset;
+    currentInsets.top = self.originalTopInset;
+    [self setScrollViewContentInset:currentInsets];
+}
+
+- (void)setScrollViewContentInsetForLoading
+{
+    CGFloat offset = MAX(self.scrollView.contentOffset.y * -1, 0);
+    UIEdgeInsets currentInsets = self.scrollView.contentInset;
+    currentInsets.top = MIN(offset, self.originalTopInset + self.bounds.size.height);
+    [self setScrollViewContentInset:currentInsets];
+}
+
+- (void)setScrollViewContentInset:(UIEdgeInsets)contentInset
+{
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                        self.scrollView.contentInset = contentInset;
+                     }
+                     completion:nil];
+}
+
 - (void)scrollViewDidScroll:(CGPoint)contentOffset
 {
     if (self.state != OPPullToRefreshStateLoading) {
         CGFloat scrollOffsetThreshold = 0;
         scrollOffsetThreshold = self.frame.origin.y - self.originalTopInset;
+        NSLog(@"ScollOffset:%f",contentOffset.y);
+        NSLog(@"Threshold:%f", scrollOffsetThreshold);
         
-        if (!self.scrollView.isDragging && self.state == OPPullToRefreshStateTriggered) {
+        if(!self.scrollView.isDragging && self.state == OPPullToRefreshStateTriggered)
+        {
             self.state = OPPullToRefreshStateLoading;
-        } else if (contentOffset.y < scrollOffsetThreshold && self.scrollView.isDragging && self.state == OPPullToRefreshStateStopped) {
+        }
+        else if(contentOffset.y < scrollOffsetThreshold && self.scrollView.isDragging && self.state == OPPullToRefreshStateStopped)
+        {
             self.state = OPPullToRefreshStateTriggered;
-        } else if (contentOffset.y >= scrollOffsetThreshold && self.state != OPPullToRefreshStateStopped) {
+        }
+        else if(contentOffset.y >= scrollOffsetThreshold && self.state != OPPullToRefreshStateStopped)
+        {
             self.state = OPPullToRefreshStateStopped;
         }
     } else {
@@ -163,9 +220,75 @@ static char UIScrollViewPullToRefreshView;
     }
 }
 
+#pragma mark - Setters -
+
 - (void)setState:(OPPullToRefreshState)newState
 {
+    if (_state == newState) {
+        return;
+    }
     
+    OPPullToRefreshState previousState = _state;
+    _state = newState;
+    
+    [self layoutSubviews];
+    
+    switch (newState) {
+        case OPPullToRefreshStateAll:
+        case OPPullToRefreshStateStopped:
+            [self resetScrollViewContentInset];
+            break;
+        case OPPullToRefreshStateTriggered:
+            break;
+        case OPPullToRefreshStateLoading:
+            [self setScrollViewContentInsetForLoading];
+            
+            if (previousState == OPPullToRefreshStateTriggered && pullToRefreshActionHandler) {
+                pullToRefreshActionHandler();
+            }
+            break;
+    }
+}
+
+#pragma mark - Animates -
+
+- (void)rotateCircle:(float)degress hide:(BOOL)hide
+{
+    [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionAllowAnimatedContent animations:^{
+        self.circle.layer.transform = CATransform3DMakeRotation(degress, 0, 0, 1);
+        self.circle.layer.opacity = !hide;
+    } completion:nil];
+}
+
+- (void)rotateCircel
+{
+    [UIView animateWithDuration:0.1 delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
+        self.circle.transform = CGAffineTransformRotate(self.circle.transform, M_PI_2);
+    } completion:^(BOOL finished) {
+        if (finished) {
+            [self rotateCircel];
+        }
+    }];
+}
+
+- (void)stopAnimating
+{
+    self.state = OPPullToRefreshStateStopped;
+    [self.scrollView setContentOffset:CGPointMake(0, 0) animated:YES];
+}
+
+#pragma mark - Getters -
+
+- (UIImageView *)circle
+{
+    if (!_circle) {
+        _circle = [[UIImageView alloc] initWithFrame:CGRectMake(100, self.bounds.size.height - 27, 31, 27)];
+        _circle.image = [UIImage imageNamed:@"load_Complete.png"];
+        _circle.backgroundColor = [UIColor clearColor];
+        [self addSubview:_circle];
+    }
+    
+    return _circle;
 }
 
 @end

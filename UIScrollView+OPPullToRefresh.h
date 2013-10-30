@@ -33,4 +33,6 @@ typedef NS_ENUM(NSUInteger, OPPullToRefreshState)
 @property (nonatomic, strong, readonly) UILabel *subtitleLabel;
 @property (nonatomic, readonly) OPPullToRefreshState state;
 
+- (void)stopAnimating;
+
 @end
