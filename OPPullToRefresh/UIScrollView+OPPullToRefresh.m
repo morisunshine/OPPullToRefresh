@@ -36,7 +36,7 @@ static char UIScrollViewPullToRefreshView;
 @dynamic pullToRefreshView, showsPullToResfresh;
 
 
-- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler
+- (void)addOPPullToRefreshWithActionHandler:(void (^)(void))actionHandler
 {
     if (!self.pullToRefreshView) {
         CGFloat yOrigin = -OPPullToRefreshViewHeight;

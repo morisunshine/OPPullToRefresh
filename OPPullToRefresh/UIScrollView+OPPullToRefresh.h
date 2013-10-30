@@ -12,7 +12,7 @@
 
 @interface UIScrollView (OPPullToRefresh)
 
-- (void)addPullToRefreshWithActionHandler:(void (^)(void))actionHandler;
+- (void)addOPPullToRefreshWithActionHandler:(void (^)(void))actionHandler;
 
 @property (nonatomic, strong) OPPullToRefreshView *pullToRefreshView;
 @property (nonatomic, assign) BOOL showsPullToResfresh;
